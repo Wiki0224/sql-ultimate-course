@@ -284,7 +284,32 @@ ALTER INDEX idx_Customers_Country
 ON Sales.Customers REBUILD;
 GO
 
+/* ==============================================================================
+   SQL Hints
+- Test Hint in all environments (Prod, Test) as performance may vary
+- Hints are handy in emergency but they are workaround not solution, 
+- you still have to find the cause 
+(eg. old statistics, too many indexes) and fix it.
+============================================================================== */
 
+SELECT 
+	o.Sales,
+	c.Country
+FROM Sales.Orders o
+LEFT JOIN Sales.Customers c
+ON 		o.CustomerID = c.CustomerID
+OPTION (HASH JOIN);
 
+SELECT 
+	o.Sales,
+	c.Country
+FROM Sales.Orders o
+LEFT JOIN Sales.Customers c WITH (FORCESEEK)
+ON 		o.CustomerID = c.CustomerID
 
-
+SELECT 
+	o.Sales,
+	c.Country
+FROM Sales.Orders o
+LEFT JOIN Sales.Customers c WITH (INDEX([PK__Customers__A4AE64B87FC20A48]))
+ON 		o.CustomerID = c.CustomerID
