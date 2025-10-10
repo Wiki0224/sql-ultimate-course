@@ -20,10 +20,14 @@
    BASIC AGGREGATE FUNCTIONS
 =============================================================================== */
 
--- Find the total number of customers
+-- Find the total number of customers (including NULL value)
 SELECT COUNT(*) AS total_customers
 FROM customers
-
+   
+-- Find the total number of customers (excluding NULL value)
+SELECT COUNT(customer_id) AS total_customers
+FROM customers
+   
 -- Find the total sales of all orders
 SELECT SUM(sales) AS total_sales
 FROM orders
@@ -54,3 +58,21 @@ SELECT
     MIN(sales) AS lowest_sales
 FROM orders
 GROUP BY customer_id
+
+-- Find the number of new_orders, expired orders and total_orders in MULTIPLE rows
+SELECT
+    status,
+    COUNT(*) AS status_count
+FROM orders
+GROUP BY status
+
+/* ============================================================================== 
+   CONDITIONAL AGGREGATIONS - with CASE WHEN statements
+=============================================================================== */
+
+-- Find the number of new_orders, expired orders and total_orders in SINGLE row
+SELECT
+    COUNT(CASE WHEN status = 'new' THEN order_id END) AS new_orders,
+    COUNT(CASE WHEN status = 'expired' THEN order_id END) AS expired_orders,
+    COUNT(*) AS total_orders
+FROM orders
