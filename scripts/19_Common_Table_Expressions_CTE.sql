@@ -113,6 +113,29 @@ SELECT *
 FROM Series
 OPTION (MAXRECURSION 5000);
 
+/* TASK 4:
+   Generate a list of all months between the minimum and maximum order_date found in the gold.fact_sales table.
+*/
+WITH stop_date AS (
+    SELECT
+        MAX(order_date) AS stop_date
+    FROM gold.fact_sales
+)
+, DateSeries AS (
+    -- Anchor query
+    SELECT
+        MIN(order_date) AS full_date
+    FROM gold.fact_sales
+    UNION ALL
+    -- Recursive query
+    SELECT
+        DATEADD(month, 1, full_date)
+    FROM DateSeries
+    WHERE full_date < (SELECT stop_date FROM stop_date)
+)
+SELECT * 
+FROM DateSeries
+
 /* ==============================================================================
    RECURSIVE CTE | BUILD HIERARCHY
 ===============================================================================*/
@@ -145,4 +168,5 @@ WITH CTE_Emp_Hierarchy AS
 )
 -- Main Query
 SELECT *
+
 FROM CTE_Emp_Hierarchy;
